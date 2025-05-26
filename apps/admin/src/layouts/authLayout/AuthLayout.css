@@ -1,0 +1,8 @@
+.MainContainer {
+  display: flex;
+  height: 100%;
+}
+
+.Content {
+  padding: 1rem;
+}

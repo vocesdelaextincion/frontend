@@ -1,0 +1,15 @@
+#root {
+  height: 100vh;
+}
+
+:root {
+  --color-green-100: #e6f4ea;
+  --color-green-200: #cce9d5;
+  --color-green-300: #a3d5b3;
+  --color-green-400: #78bf91;
+  --color-green-500: #4ea96f; /* color base */
+  --color-green-600: #3f8b5a;
+  --color-green-700: #326e48;
+  --color-green-800: #245035;
+  --color-green-900: #173422;
+}
