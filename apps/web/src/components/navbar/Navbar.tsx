@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { Menu } from "lucide-react";
+import Link from "next/link";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-primary-500 text-white shadow-md">
+    <header className="bg-primary-500 text-white shadow-md ">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-display">Voces de la extinción</h1>
@@ -16,36 +17,16 @@ const Navbar = () => {
           <nav className="hidden md:block">
             <ul className="flex space-x-6">
               <li>
-                <a
-                  href="#"
-                  className="hover:text-primary-200 transition-colors"
-                >
-                  Inicio
-                </a>
+                <Link href="/">Inicio</Link>
               </li>
               <li>
-                <a
-                  href="#recordings"
-                  className="hover:text-primary-200 transition-colors"
-                >
-                  Grabaciones
-                </a>
+                <Link href="/recordings">Grabaciones</Link>
               </li>
               <li>
-                <a
-                  href="#about"
-                  className="hover:text-primary-200 transition-colors"
-                >
-                  Sobre Nosotros
-                </a>
+                <Link href="/about">Sobre Nosotros</Link>
               </li>
               <li>
-                <a
-                  href="#contact"
-                  className="hover:text-primary-200 transition-colors"
-                >
-                  Contacto
-                </a>
+                <Link href="/contact">Contacto</Link>
               </li>
             </ul>
           </nav>
@@ -66,36 +47,24 @@ const Navbar = () => {
         >
           <ul className="flex flex-col space-y-2">
             <li>
-              <a
-                href="#"
-                className="block px-4 py-2 hover:bg-primary-600 rounded transition-colors"
-              >
+              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
                 Inicio
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#recordings"
-                className="block px-4 py-2 hover:bg-primary-600 rounded transition-colors"
-              >
+              <Link href="/recordings" onClick={() => setMobileMenuOpen(false)}>
                 Grabaciones
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#about"
-                className="block px-4 py-2 hover:bg-primary-600 rounded transition-colors"
-              >
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)}>
                 Sobre Nosotros
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#contact"
-                className="block px-4 py-2 hover:bg-primary-600 rounded transition-colors"
-              >
+              <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
                 Contacto
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
