@@ -29,9 +29,19 @@ const authenticatedRoute = createRoute({
   },
 });
 
+const indexRoute = createRoute({
+    getParentRoute: () => authenticatedRoute,
+    path: '/',
+    beforeLoad: () => {
+        throw redirect({
+            to: '/dashboard',
+        });
+    },
+});
+
 const dashboardRoute = createRoute({
   getParentRoute: () => authenticatedRoute,
-  path: '/',
+  path: '/dashboard',
   component: DashboardPage,
 });
 
@@ -55,7 +65,7 @@ const tagsRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
-  authenticatedRoute.addChildren([dashboardRoute, usersRoute, recordingsRoute, tagsRoute]),
+  authenticatedRoute.addChildren([indexRoute, dashboardRoute, usersRoute, recordingsRoute, tagsRoute]),
 ]);
 
 export const router = createRouter({
