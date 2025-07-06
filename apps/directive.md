@@ -1,8 +1,9 @@
 # Admin app (frontend)
 
-- Main directives
+## Main directives
 
-* DO NOT EXECUTE COMMANDS ON YOUR OWN. TELL ME AND I'LL EXECUTE THEM
+- DO NOT EXECUTE COMMANDS ON YOUR OWN. TELL ME AND I'LL EXECUTE THEM
+- DO NOT MODIFY ENV FILES. USE A env.txt placeholder file. I'LL CHANGE IT LATER.
 
 ## Context
 
@@ -19,6 +20,8 @@ Here, the admins can perform all the actions that are related to the management 
 - TanStack Query
 - Formik
 - Yup
+
+* Every package is already installed.
 
 ## Routes
 
