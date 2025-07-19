@@ -29,6 +29,9 @@ importers:
       '@tanstack/react-router':
         specifier: ^1.125.1
         version: 1.125.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@vocesdelaextincion/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       formik:
         specifier: ^2.4.6
         version: 2.4.6(react@19.1.0)
@@ -169,6 +172,15 @@ importers:
       typescript-eslint:
         specifier: ^8.31.0
         version: 8.31.0(eslint@9.26.0(jiti@2.4.2))(typescript@5.8.2)
+
+  packages/types:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      typescript:
+        specifier: ^5.3.3
+        version: 5.8.3
 
   packages/typescript-config: {}
 

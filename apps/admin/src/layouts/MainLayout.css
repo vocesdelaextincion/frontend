@@ -1,0 +1,36 @@
+.main-layout-container {
+  height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--rs-primary-500);
+  height: 100vh;
+}
+
+.sidenav-header {
+  padding: 1rem;
+  font-size: 16px;
+  background: var(--rs-primary-500);
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidenav-header-icon {
+  margin-right: 1rem;
+}
+
+.sidenav-header-text {
+  margin-left: 1rem;
+}
+
+.nav-toggle-item {
+  width: 1rem;
+  text-align: center;
+}
+
+.main-content {
+  padding: 2rem;
+}

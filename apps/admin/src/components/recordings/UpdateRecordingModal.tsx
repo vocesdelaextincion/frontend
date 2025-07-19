@@ -1,3 +1,8 @@
+import { Formik, type FormikHelpers } from "formik";
+import * as Yup from "yup";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Recording } from "@packages/types/recording";
+import type { Tag } from "@packages/types/tag";
 import {
   Modal,
   Button,
@@ -7,13 +12,10 @@ import {
   toaster,
   TagPicker,
   Loader,
-} from 'rsuite';
-import { Formik } from 'formik';
-import type { FormikHelpers } from 'formik';
-import * as Yup from 'yup';
-import api from '../../services/api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Tag, Recording } from '../../types';
+  Uploader,
+} from "rsuite";
+import type { FileType } from "rsuite/Uploader";
+import api from "../../services/api";
 
 interface UpdateRecordingModalProps {
   open: boolean;
@@ -22,44 +24,59 @@ interface UpdateRecordingModalProps {
 }
 
 interface FormValues {
-  name: string;
-  url: string;
+  title: string;
+  description: string;
   tagIds: string[];
+  recording?: FileType | null;
 }
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
-  url: Yup.string().url('Invalid URL').required('URL is required'),
+  title: Yup.string().required("Title is required"),
+  description: Yup.string().required("Description is required"),
   tagIds: Yup.array().of(Yup.string()),
+  recording: Yup.mixed().nullable(),
 });
 
-const UpdateRecordingModal = ({ open, onClose, recording }: UpdateRecordingModalProps) => {
+const UpdateRecordingModal = ({
+  open,
+  onClose,
+  recording,
+}: UpdateRecordingModalProps) => {
   const queryClient = useQueryClient();
 
   const { data: tags, isLoading: isLoadingTags } = useQuery<Tag[], Error>({
-    queryKey: ['tags'],
-    queryFn: () => api.get('/tags'),
+    queryKey: ["tags"],
+    queryFn: () => api.get("/tags"),
   });
 
-  const mutation = useMutation<unknown, Error, FormValues>({
-    mutationFn: (updatedRecording) => api.put(`/recordings/${recording?.id}`, updatedRecording as unknown as Record<string, unknown>),
+  const mutation = useMutation<Recording, Error, FormData>({
+    mutationFn: (updatedRecording) =>
+      api.put(`/recordings/${recording?.id}`, updatedRecording),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recordings'] });
-      toaster.push(<Message type="success">Recording updated successfully.</Message>);
+      queryClient.invalidateQueries({ queryKey: ["recordings"] });
+      toaster.push(
+        <Message type="success">Recording updated successfully.</Message>
+      );
       onClose();
     },
     onError: (error) => {
-      toaster.push(<Message type="error">{error.message || 'Failed to update recording.'}</Message>);
+      toaster.push(
+        <Message type="error">
+          {error.message || "Failed to update recording."}
+        </Message>
+      );
     },
   });
 
   if (!recording) return null;
 
-  const tagData = tags?.map(tag => ({ label: tag.name, value: tag.id })) || [];
+  const tagData =
+    tags?.map((tag: Tag) => ({ label: tag.name, value: tag.id })) || [];
   const initialFormValues: FormValues = {
-    name: recording.name,
-    url: recording.url,
-    tagIds: recording.tags.map(t => t.id),
+    title: recording.title,
+    description: recording.description || "",
+    tagIds: recording.tags?.map((tag: Tag) => tag.id) ?? [],
+    recording: null,
   };
 
   return (
@@ -76,33 +93,65 @@ const UpdateRecordingModal = ({ open, onClose, recording }: UpdateRecordingModal
             validationSchema={validationSchema}
             enableReinitialize
             onSubmit={(values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
-              mutation.mutate(values, {
+              const formData = new FormData();
+              formData.append("title", values.title);
+              formData.append("description", values.description);
+              formData.append("tagIds", JSON.stringify(values.tagIds));
+              
+
+              if (values.recording?.blobFile) {
+                formData.append(
+                  "recording",
+                  values.recording.blobFile,
+                  values.recording.name
+                );
+              }
+
+              mutation.mutate(formData, {
                 onSettled: () => setSubmitting(false),
               });
             }}
           >
-            {({ values, errors, touched, handleBlur, handleSubmit, isSubmitting, setFieldValue }) => (
+            {({
+              values,
+              errors,
+              touched,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+            }) => (
               <Form fluid onSubmit={() => handleSubmit()}>
                 <Form.Group>
-                  <Form.ControlLabel>Name</Form.ControlLabel>
+                  <Form.ControlLabel>Title</Form.ControlLabel>
                   <Form.Control
-                    name="name"
-                    onChange={(value: string) => setFieldValue('name', value)}
+                    name="title"
+                    onChange={(value: string) => setFieldValue("title", value)}
                     onBlur={handleBlur}
-                    value={values.name}
+                    value={values.title}
                   />
-                  {errors.name && touched.name && <Form.HelpText style={{ color: 'red' }}>{errors.name}</Form.HelpText>}
+                  {errors.title && touched.title && (
+                    <Form.HelpText style={{ color: "red" }}>
+                      {errors.title}
+                    </Form.HelpText>
+                  )}
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.ControlLabel>URL</Form.ControlLabel>
+                  <Form.ControlLabel>Description</Form.ControlLabel>
                   <Form.Control
-                    name="url"
-                    onChange={(value: string) => setFieldValue('url', value)}
+                    name="description"
+                    onChange={(value: string) =>
+                      setFieldValue("description", value)
+                    }
                     onBlur={handleBlur}
-                    value={values.url}
+                    value={values.description}
                   />
-                  {errors.url && touched.url && <Form.HelpText style={{ color: 'red' }}>{errors.url}</Form.HelpText>}
+                  {errors.description && touched.description && (
+                    <Form.HelpText style={{ color: "red" }}>
+                      {errors.description}
+                    </Form.HelpText>
+                  )}
                 </Form.Group>
 
                 <Form.Group>
@@ -111,15 +160,58 @@ const UpdateRecordingModal = ({ open, onClose, recording }: UpdateRecordingModal
                     data={tagData}
                     name="tagIds"
                     value={values.tagIds}
-                    onChange={(value) => setFieldValue('tagIds', value)}
+                    onChange={(value) => setFieldValue("tagIds", value)}
                     onBlur={handleBlur}
                     block
                   />
                 </Form.Group>
 
                 <Form.Group>
+                  <Form.ControlLabel>Recording File</Form.ControlLabel>
+                  {!values.recording && (
+                    <p>
+                      Current file:{" "}
+                      <a
+                        href={recording.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {recording.fileUrl}
+                      </a>
+                    </p>
+                  )}
+                  <Uploader
+                    action=""
+                    draggable
+                    autoUpload={false}
+                    multiple={false}
+                    onChange={(files) => {
+                      setFieldValue("recording", files[0]);
+                    }}
+                    onBlur={() => handleBlur({ target: { name: "recording" } })}
+                  >
+                    <div
+                      style={{
+                        lineHeight: "100px",
+                      }}
+                    >
+                      Click or Drag a new file to replace the existing one
+                    </div>
+                  </Uploader>
+                  {errors.recording && touched.recording && (
+                    <Form.HelpText style={{ color: "red" }}>
+                      {errors.recording}
+                    </Form.HelpText>
+                  )}
+                </Form.Group>
+
+                <Form.Group>
                   <ButtonToolbar>
-                    <Button appearance="primary" type="submit" loading={isSubmitting}>
+                    <Button
+                      appearance="primary"
+                      type="submit"
+                      loading={isSubmitting}
+                    >
                       Update
                     </Button>
                     <Button onClick={onClose} appearance="subtle">

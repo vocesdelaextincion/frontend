@@ -1,0 +1,16 @@
+{
+  "name": "@vocesdelaextincion/types",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@repo/eslint-config": "workspace:*"
+  }
+}
