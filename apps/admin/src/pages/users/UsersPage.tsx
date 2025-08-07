@@ -4,13 +4,17 @@ import {
   Table,
   Loader,
   Message,
-
+  Input,
+  InputGroup,
+  SelectPicker,
+  FlexboxGrid,
   ButtonToolbar,
   IconButton,
   toaster,
 } from "rsuite";
 import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
+import SearchIcon from "@rsuite/icons/Search";
 import type { User } from "@packages/types/user";
 import api from "../../services/api";
 
@@ -24,6 +28,11 @@ const UsersPage = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  // Search and filter state
+  const [searchInput, setSearchInput] = useState(""); // Input field value
+  const [searchTerm, setSearchTerm] = useState(""); // Actual search term for API
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -33,8 +42,21 @@ const UsersPage = () => {
     isError,
     error,
   } = useQuery<User[], Error>({
-    queryKey: ["users"],
-    queryFn: () => api.get("/admin/users"),
+    queryKey: ["users", searchTerm, selectedPlan],
+    queryFn: async () => {
+      const params: Record<string, string> = {};
+      
+      if (searchTerm) {
+        params.search = searchTerm;
+      }
+      
+      if (selectedPlan) {
+        params.plan = selectedPlan;
+      }
+      
+      const response = await api.get("/admin/users", params);
+      return response.data;
+    },
   });
 
   const deleteMutation = useMutation<unknown, Error, string>({
@@ -72,6 +94,28 @@ const UsersPage = () => {
     }
   };
 
+  // Handle search input change
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    setSelectedPlan(null); // Clear plan selection when typing search
+  };
+
+  // Handle search on Enter key press
+  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      setSearchTerm(searchInput);
+    }
+  };
+
+  // Handle plan filter selection
+  const handlePlanSelect = (plan: string | null) => {
+    setSelectedPlan(plan);
+    setSearchInput(""); // Clear search input when selecting plan
+    setSearchTerm(""); // Clear search term when selecting plan
+  };
+
+
+
   if (isLoading) {
     return <Loader center size="lg" content="Loading..." />;
   }
@@ -95,6 +139,36 @@ const UsersPage = () => {
 
         </ButtonToolbar>
       </div>
+      
+      {/* Search and Filter Controls */}
+      <FlexboxGrid justify="space-between" style={{ marginBottom: "20px" }}>
+        <FlexboxGrid.Item colspan={12}>
+          <InputGroup inside>
+            <Input
+              placeholder="Search users by email... (Press Enter to search)"
+              value={searchInput}
+              onChange={handleSearchChange}
+              onKeyPress={handleSearchKeyPress}
+            />
+            <InputGroup.Addon>
+              <SearchIcon />
+            </InputGroup.Addon>
+          </InputGroup>
+        </FlexboxGrid.Item>
+        <FlexboxGrid.Item colspan={8}>
+          <SelectPicker
+            data={[
+              { label: "FREE", value: "FREE" },
+              { label: "PREMIUM", value: "PREMIUM" }
+            ]}
+            placeholder="Filter by plan"
+            value={selectedPlan}
+            onChange={handlePlanSelect}
+            cleanable
+            style={{ width: "100%" }}
+          />
+        </FlexboxGrid.Item>
+      </FlexboxGrid>
 
       <UpdateUserModal
         open={isUpdateModalOpen}

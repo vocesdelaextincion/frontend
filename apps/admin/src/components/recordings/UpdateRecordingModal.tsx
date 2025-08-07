@@ -26,14 +26,14 @@ interface UpdateRecordingModalProps {
 interface FormValues {
   title: string;
   description: string;
-  tagIds: string[];
+  tags: string[];
   recording?: FileType | null;
 }
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   description: Yup.string().required("Description is required"),
-  tagIds: Yup.array().of(Yup.string()),
+  tags: Yup.array().of(Yup.string()),
   recording: Yup.mixed().nullable(),
 });
 
@@ -44,7 +44,10 @@ const UpdateRecordingModal = ({
 }: UpdateRecordingModalProps) => {
   const queryClient = useQueryClient();
 
-  const { data: tags, isLoading: isLoadingTags } = useQuery<Tag[], Error>({
+  const { data: tagsResponse, isLoading: isLoadingTags } = useQuery<
+    { data: Tag[] },
+    Error
+  >({
     queryKey: ["tags"],
     queryFn: () => api.get("/tags"),
   });
@@ -70,12 +73,12 @@ const UpdateRecordingModal = ({
 
   if (!recording) return null;
 
-  const tagData =
-    tags?.map((tag: Tag) => ({ label: tag.name, value: tag.id })) || [];
+  const tags = tagsResponse?.data || [];
+  const tagData = tags.map((tag: Tag) => ({ label: tag.name, value: tag.id }));
   const initialFormValues: FormValues = {
     title: recording.title,
     description: recording.description || "",
-    tagIds: recording.tags?.map((tag: Tag) => tag.id) ?? [],
+    tags: recording.tags?.map((tag: Tag) => tag.id) ?? [],
     recording: null,
   };
 
@@ -92,12 +95,14 @@ const UpdateRecordingModal = ({
             initialValues={initialFormValues}
             validationSchema={validationSchema}
             enableReinitialize
-            onSubmit={(values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+            onSubmit={(
+              values: FormValues,
+              { setSubmitting }: FormikHelpers<FormValues>
+            ) => {
               const formData = new FormData();
               formData.append("title", values.title);
               formData.append("description", values.description);
-              formData.append("tagIds", JSON.stringify(values.tagIds));
-              
+              formData.append("tags", JSON.stringify(values.tags));
 
               if (values.recording?.blobFile) {
                 formData.append(
@@ -158,9 +163,9 @@ const UpdateRecordingModal = ({
                   <Form.ControlLabel>Tags</Form.ControlLabel>
                   <TagPicker
                     data={tagData}
-                    name="tagIds"
-                    value={values.tagIds}
-                    onChange={(value) => setFieldValue("tagIds", value)}
+                    name="tags"
+                    value={values.tags}
+                    onChange={(value) => setFieldValue("tags", value)}
                     onBlur={handleBlur}
                     block
                   />

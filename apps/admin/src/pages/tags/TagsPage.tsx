@@ -44,7 +44,10 @@ const TagsPage = () => {
 
   const { data: tags, isLoading, isError, error } = useQuery<Tag[], Error>({
     queryKey: ["tags"],
-    queryFn: () => api.get("/tags"),
+    queryFn: async () => {
+      const response = await api.get("/tags");
+      return response.data || response;
+    },
   });
 
   const createMutation = useMutation<Tag, Error, { name: string }>({

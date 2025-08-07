@@ -1,5 +1,12 @@
 const BASE_URL = "http://localhost:3001";
 
+export class AuthorizationError extends Error {
+  constructor(message: string = "Not authorized") {
+    super(message);
+    this.name = "AuthorizationError";
+  }
+}
+
 const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
   return {
@@ -9,13 +16,28 @@ const getAuthHeaders = () => {
 };
 
 const api = {
-  get: async (url: string) => {
-    const response = await fetch(`${BASE_URL}${url}`, {
+  get: async (url: string, params?: Record<string, string | number>) => {
+    let fullUrl = `${BASE_URL}${url}`;
+    if (params) {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          searchParams.append(key, String(value));
+        }
+      });
+      if (searchParams.toString()) {
+        fullUrl += `?${searchParams.toString()}`;
+      }
+    }
+    const response = await fetch(fullUrl, {
       method: "GET",
       headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new AuthorizationError();
+      }
       throw new Error("Network response was not ok");
     }
 
@@ -42,6 +64,9 @@ const api = {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new AuthorizationError();
+      }
       throw new Error("Network response was not ok");
     }
 
@@ -68,6 +93,9 @@ const api = {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new AuthorizationError();
+      }
       throw new Error("Network response was not ok");
     }
 
@@ -80,6 +108,9 @@ const api = {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new AuthorizationError();
+      }
       throw new Error("Network response was not ok");
     }
 

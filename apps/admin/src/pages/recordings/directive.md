@@ -1,93 +1,217 @@
-# Directive to apply some changes in the Recordings page
+# 📘 AI Directive File
 
-## Model
+You are an AI assistant collaborating on a project. This file contains your primary instructions.  
+Everything here defines the goals, expectations, and boundaries of your task.
 
-- Look this is the init migration in the db. Grab the model from here and update the ts type. (only take a look to the Recording and related schemas)
+✅ Always read and follow this file before doing anything else.  
+🧠 Think step by step, reason through the problem, and avoid rushing.  
+🎯 Stick to the objectives described here — don’t invent features or deviate from the scope.  
+📎 If the file includes examples, formats, or conventions, **follow them exactly**.
 
--- CreateEnum
-CREATE TYPE "Plan" AS ENUM ('FREE', 'PREMIUM');
+This file takes priority over any other information unless explicitly stated otherwise.
 
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+---
 
--- CreateTable
-CREATE TABLE "User" (
-"id" TEXT NOT NULL,
-"email" TEXT NOT NULL,
-"password" TEXT NOT NULL,
-"isVerified" BOOLEAN NOT NULL DEFAULT false,
-"emailVerificationToken" TEXT,
-"emailVerificationTokenExpires" TIMESTAMP(3),
-"passwordResetToken" TEXT,
-"passwordResetTokenExpires" TIMESTAMP(3),
-"plan" "Plan" NOT NULL DEFAULT 'FREE',
-"role" "Role" NOT NULL DEFAULT 'USER',
-"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-"updatedAt" TIMESTAMP(3) NOT NULL,
+## Scope
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+RecordingPage.tsx
 
-);
+## Task
 
--- CreateTable
-CREATE TABLE "Recording" (
-"id" TEXT NOT NULL,
-"title" TEXT NOT NULL,
-"description" TEXT,
-"fileUrl" TEXT NOT NULL,
-"fileKey" TEXT NOT NULL,
-"metadata" JSONB,
-"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-"updatedAt" TIMESTAMP(3) NOT NULL,
+- Implement and update this page based on the new structure of the recording and tag controllers.
+- We have now a search and a pagination feature.
+- Add a search bar to the top of the table. (Rsuite components)
+- Add a way to trigger a rapid search based on tags, maybe a dropdown or something similar. The endpoint will be the same, using the search feature, but the search will be triggered by the tags.
+- Add pagination buttons to the bottom of the table. (Rsuite components)
 
-    CONSTRAINT "Recording_pkey" PRIMARY KEY ("id")
+## Extra context
 
-);
+This is the function in the recording.controller:
 
--- CreateTable
-CREATE TABLE "Tag" (
-"id" TEXT NOT NULL,
-"name" TEXT NOT NULL,
+/\*\*
 
-    CONSTRAINT "Tag_pkey" PRIMARY KEY ("id")
+- Get recordings with pagination and search functionality
+-
+- Query Parameters:
+- - page: Page number (default: 1)
+- - limit: Items per page (default: 10, max: 100)
+- - search: Search term(s) to filter across title, description, and tags
+- Can be a single term or multiple comma-separated terms
+-
+- Example usage:
+- GET /recordings?page=2&limit=20&search=nature
+- GET /recordings?search=bird sounds
+- GET /recordings?search=nature,birds,animal
+- GET /recordings?page=1&limit=5
+  _/
+  export const getRecordings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+  ): Promise<void> => {
+  try {
+  // Parse pagination parameters
+  const page = Math.max(1, parseInt(req.query.page as string) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
+  const skip = (page - 1) _ limit;
 
-);
+      // Parse search parameter
+      const search = req.query.search as string;
 
--- CreateTable
-CREATE TABLE "\_RecordingToTag" (
-"A" TEXT NOT NULL,
-"B" TEXT NOT NULL,
+      // Build where clause for search
+      let whereClause = {};
 
-    CONSTRAINT "_RecordingToTag_AB_pkey" PRIMARY KEY ("A","B")
+      if (search) {
+        // Split search terms by comma and trim whitespace
+        const searchTerms = search.split(',').map(term => term.trim()).filter(term => term.length > 0);
 
-);
+        if (searchTerms.length > 0) {
+          // Create OR conditions for each search term across all fields
+          const searchConditions = searchTerms.map(term => ({
+            OR: [
+              {
+                title: {
+                  contains: term,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                description: {
+                  contains: term,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                tags: {
+                  some: {
+                    name: {
+                      contains: term,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                },
+              },
+            ],
+          }));
 
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+          // Use OR to match any of the search terms
+          whereClause = {
+            OR: searchConditions,
+          };
+        }
+      }
 
--- CreateIndex
-CREATE UNIQUE INDEX "User_emailVerificationToken_key" ON "User"("emailVerificationToken");
+      // Get total count for pagination metadata
+      const totalCount = await prisma.recording.count({
+        where: whereClause,
+      });
 
--- CreateIndex
-CREATE UNIQUE INDEX "User_passwordResetToken_key" ON "User"("passwordResetToken");
+      // Get recordings with pagination and search
+      const recordings = await prisma.recording.findMany({
+        where: whereClause,
+        include: {
+          tags: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      });
 
--- CreateIndex
-CREATE UNIQUE INDEX "Recording_fileUrl_key" ON "Recording"("fileUrl");
+      // Calculate pagination metadata
+      const totalPages = Math.ceil(totalCount / limit);
+      const hasNextPage = page < totalPages;
+      const hasPreviousPage = page > 1;
 
--- CreateIndex
-CREATE UNIQUE INDEX "Recording_fileKey_key" ON "Recording"("fileKey");
+      res.status(200).json({
+        data: recordings,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          limit,
+          hasNextPage,
+          hasPreviousPage,
+        },
+        search: search || null,
+      });
 
--- CreateIndex
-CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
+  } catch (error) {
+  next(error);
+  }
+  };
 
--- CreateIndex
-CREATE INDEX "\_RecordingToTag_B_index" ON "\_RecordingToTag"("B");
+---
 
--- AddForeignKey
-ALTER TABLE "\_RecordingToTag" ADD CONSTRAINT "\_RecordingToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Recording"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+This is the function in the tag.controller:
 
--- AddForeignKey
-ALTER TABLE "\_RecordingToTag" ADD CONSTRAINT "\_RecordingToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+/\*\*
 
-- Then update the table and modal to match that model.
-- Then update whatever you need to update in the api service.
+- Get tags with search functionality
+-
+- Query Parameters:
+- - search: Search term(s) to filter across tag name
+- Can be a single term or multiple comma-separated terms
+-
+- Example usage:
+- GET /tags?search=nature
+- GET /tags?search=bird sounds
+- GET /tags?search=nature,birds,animal
+  \*/
+  export const getTags = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+  ): Promise<void> => {
+  try {
+  // Parse search parameter
+  const search = req.query.search as string;
+
+      // Build where clause for search
+      let whereClause = {};
+
+      if (search) {
+        // Split search terms by comma and trim whitespace
+        const searchTerms = search
+          .split(",")
+          .map((term) => term.trim())
+          .filter((term) => term.length > 0);
+
+        if (searchTerms.length > 0) {
+          // Create OR conditions for each search term across name field
+          const searchConditions = searchTerms.map((term) => ({
+            OR: [
+              {
+                name: {
+                  contains: term,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          }));
+
+          // Use OR to match any of the search terms
+          whereClause = {
+            OR: searchConditions,
+          };
+        }
+      }
+
+      // Get tags with search
+      const tags = await prisma.tag.findMany({
+        where: whereClause,
+        orderBy: {
+          name: "asc",
+        },
+      });
+
+      res.status(200).json({
+        data: tags,
+        search: search || null,
+      });
+
+  } catch (error) {
+  next(error);
+  }
+  };

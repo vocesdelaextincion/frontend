@@ -22,33 +22,33 @@ interface CreateRecordingModalProps {
   onClose: () => void;
 }
 
-
-
 interface FormValues {
   title: string;
   description: string;
-  tagIds: string[];
+  tags: string[];
   recording: FileType | null;
 }
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   description: Yup.string().required("Description is required"),
-  tagIds: Yup.array(),
+  tags: Yup.array(),
   recording: Yup.mixed().required("A file is required"),
 });
 
 const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
   const queryClient = useQueryClient();
 
-  const { data: tags, isLoading: isLoadingTags } = useQuery<Tag[]>({
+  const { data: tagsResponse, isLoading: isLoadingTags } = useQuery<
+    { data: Tag[] },
+    Error
+  >({
     queryKey: ["tags"],
     queryFn: () => api.get("/tags"),
   });
 
   const createRecordingMutation = useMutation<unknown, Error, FormData>({
-    mutationFn: (newRecording) =>
-      api.post("/recordings", newRecording),
+    mutationFn: (newRecording) => api.post("/recordings", newRecording),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recordings"] });
       toaster.push(
@@ -65,13 +65,13 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
     },
   });
 
-  const tagData =
-    tags?.map((tag) => ({ label: tag.name, value: tag.id })) || [];
+  const tags = tagsResponse?.data || [];
+  const tagData = tags.map((tag) => ({ label: tag.name, value: tag.id }));
 
   const initialFormValues: FormValues = {
     title: "",
     description: "",
-    tagIds: [],
+    tags: [],
     recording: null,
   };
 
@@ -99,8 +99,12 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
               const formData = new FormData();
               formData.append("title", values.title);
               formData.append("description", values.description);
-              formData.append("tagIds", JSON.stringify(values.tagIds));
-              formData.append("recording", values.recording.blobFile, values.recording.name);
+              formData.append("tags", JSON.stringify(values.tags));
+              formData.append(
+                "recording",
+                values.recording.blobFile,
+                values.recording.name
+              );
 
               createRecordingMutation.mutate(formData, {
                 onSettled: () => setSubmitting(false),
@@ -180,16 +184,14 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
                   <Form.ControlLabel>Tags</Form.ControlLabel>
                   <TagPicker
                     data={tagData}
-                    value={values.tagIds}
-                    onChange={(value: string[]) =>
-                      setFieldValue("tagIds", value)
-                    }
-                    onBlur={() => handleBlur({ target: { name: "tagIds" } })}
+                    value={values.tags}
+                    onChange={(value: string[]) => setFieldValue("tags", value)}
+                    onBlur={() => handleBlur({ target: { name: "tags" } })}
                     block
                   />
-                  {errors.tagIds && touched.tagIds && (
+                  {errors.tags && touched.tags && (
                     <Form.HelpText style={{ color: "red" }}>
-                      {errors.tagIds}
+                      {errors.tags}
                     </Form.HelpText>
                   )}
                 </Form.Group>
