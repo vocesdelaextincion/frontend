@@ -64,7 +64,7 @@ const DashboardPage = () => {
   });
 
   if (isLoading) {
-    return <Loader center size="lg" content="Loading..." />;
+        return <Loader center size="lg" content="Cargando..." />;
   }
 
   if (isError) {
@@ -73,28 +73,28 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <h2>Dashboard</h2>
-      <p>Welcome to the Voces de la Extinción admin panel.</p>
+            <h2>Panel de Control</h2>
+            <p>Bienvenido al panel de administración de Voces de la Extinción.</p>
       {metrics && (
         <Row gutter={16} style={{ marginTop: 20 }}>
           <Col md={6}>
-            <DashboardCard to="/users" header="Users">
-              <p>Total users: {metrics.totalUsers}</p>
+                        <DashboardCard to="/users" header="Usuarios">
+                            <p>Total de usuarios: {metrics.totalUsers}</p>
             </DashboardCard>
           </Col>
           <Col md={6}>
-            <DashboardCard to="/users" header="Admins">
-              <p>Total admins: {metrics.totalAdmins}</p>
+                        <DashboardCard to="/users" header="Administradores">
+                            <p>Total de administradores: {metrics.totalAdmins}</p>
             </DashboardCard>
           </Col>
           <Col md={6}>
-            <DashboardCard to="/recordings" header="Recordings">
-              <p>Total recordings: {metrics.totalRecordings}</p>
+                        <DashboardCard to="/recordings" header="Grabaciones">
+                            <p>Total de grabaciones: {metrics.totalRecordings}</p>
             </DashboardCard>
           </Col>
           <Col md={6}>
-            <DashboardCard to="/tags" header="Tags">
-              <p>Total tags: {metrics.totalTags}</p>
+                        <DashboardCard to="/tags" header="Etiquetas">
+                            <p>Total de etiquetas: {metrics.totalTags}</p>
             </DashboardCard>
           </Col>
         </Row>

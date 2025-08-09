@@ -19,10 +19,10 @@ const ConfirmModal = ({ open, onClose, onConfirm, title, body, isLoading }: Conf
       <Modal.Footer>
         <ButtonToolbar>
           <Button onClick={onConfirm} appearance="primary" color="red" loading={isLoading}>
-            Confirm
+            Confirmar
           </Button>
           <Button onClick={onClose} appearance="subtle">
-            Cancel
+            Cancelar
           </Button>
         </ButtonToolbar>
       </Modal.Footer>

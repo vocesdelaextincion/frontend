@@ -22,7 +22,7 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
+    name: Yup.string().required('El nombre es requerido'),
 });
 
 const CreateTagModal = ({ open, onClose }: CreateTagModalProps) => {
@@ -32,11 +32,11 @@ const CreateTagModal = ({ open, onClose }: CreateTagModalProps) => {
     mutationFn: (newTag) => api.post('/tags', newTag as unknown as Record<string, unknown>),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toaster.push(<Message type="success">Tag created successfully.</Message>);
+            toaster.push(<Message type="success">Etiqueta creada con éxito.</Message>);
       onClose();
     },
     onError: (error) => {
-      toaster.push(<Message type="error">{error.message || 'Failed to create tag.'}</Message>);
+            toaster.push(<Message type="error">{error.message || 'Error al crear la etiqueta.'}</Message>);
     },
   });
 
@@ -45,7 +45,7 @@ const CreateTagModal = ({ open, onClose }: CreateTagModalProps) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>
-        <Modal.Title>Create New Tag</Modal.Title>
+                <Modal.Title>Crear Nueva Etiqueta</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik
@@ -60,7 +60,7 @@ const CreateTagModal = ({ open, onClose }: CreateTagModalProps) => {
           {({ values, errors, touched, handleBlur, handleSubmit, isSubmitting, setFieldValue }) => (
             <Form fluid onSubmit={() => handleSubmit()}>
               <Form.Group>
-                <Form.ControlLabel>Name</Form.ControlLabel>
+                                <Form.ControlLabel>Nombre</Form.ControlLabel>
                 <Form.Control
                   name="name"
                   onChange={(value: string) => setFieldValue('name', value)}
@@ -73,10 +73,10 @@ const CreateTagModal = ({ open, onClose }: CreateTagModalProps) => {
               <Form.Group>
                 <ButtonToolbar>
                   <Button appearance="primary" type="submit" loading={isSubmitting}>
-                    Create
+                    Crear
                   </Button>
                   <Button onClick={onClose} appearance="subtle">
-                    Cancel
+                    Cancelar
                   </Button>
                 </ButtonToolbar>
               </Form.Group>

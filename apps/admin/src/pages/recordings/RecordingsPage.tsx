@@ -8,7 +8,7 @@ import {
   Button,
   ButtonToolbar,
   IconButton,
-  toaster,
+  useToaster,
   Input,
   InputGroup,
   SelectPicker,
@@ -19,9 +19,11 @@ import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
 import CopyIcon from "@rsuite/icons/Copy";
 import SearchIcon from "@rsuite/icons/Search";
+import DetailIcon from "@rsuite/icons/Detail";
 import api, { AuthorizationError } from "../../services/api";
 import CreateRecordingModal from "../../components/recordings/CreateRecordingModal";
 import UpdateRecordingModal from "../../components/recordings/UpdateRecordingModal";
+import MetadataViewerModal from "../../components/recordings/MetadataViewerModal";
 import ConfirmModal from "../../components/shared/ConfirmModal";
 import type { Recording } from "@packages/types/recording";
 import type { Tag } from "@packages/types/tag";
@@ -45,10 +47,11 @@ const RecordingsPage = () => {
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [isMetadataModalOpen, setMetadataModalOpen] = useState(false);
   const [selectedRecording, setSelectedRecording] = useState<Recording | null>(
     null
   );
-  
+
   // Search and pagination state
   const [searchInput, setSearchInput] = useState(""); // Input field value
   const [searchTerm, setSearchTerm] = useState(""); // Actual search term for API
@@ -58,6 +61,7 @@ const RecordingsPage = () => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const toaster = useToaster();
 
   const handleAuthError = useCallback(
     (error: Error) => {
@@ -83,12 +87,12 @@ const RecordingsPage = () => {
         page: currentPage,
         limit: pageSize,
       };
-      
+
       const searchValue = selectedTag || searchTerm;
       if (searchValue) {
         params.search = searchValue;
       }
-      
+
       return api.get("/recordings", params);
     },
   });
@@ -115,7 +119,7 @@ const RecordingsPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recordings"] });
       toaster.push(
-        <Message type="success">Recording deleted successfully.</Message>
+        <Message type="success">Grabación eliminada con éxito.</Message>
       );
       setConfirmOpen(false);
     },
@@ -125,7 +129,7 @@ const RecordingsPage = () => {
       }
       toaster.push(
         <Message type="error">
-          {err.message || "Failed to delete recording."}
+          {err.message || "Error al eliminar la grabación."}
         </Message>
       );
       setConfirmOpen(false);
@@ -140,6 +144,11 @@ const RecordingsPage = () => {
   const handleDeleteClick = (recording: Recording) => {
     setSelectedRecording(recording);
     setConfirmOpen(true);
+  };
+
+  const handleMetadataClick = (recording: Recording) => {
+    setSelectedRecording(recording);
+    setMetadataModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
@@ -159,8 +168,10 @@ const RecordingsPage = () => {
   };
 
   // Handle search on Enter key press
-  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+  const handleSearchKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter") {
       setSearchTerm(searchInput);
     }
   };
@@ -178,13 +189,13 @@ const RecordingsPage = () => {
   };
 
   // Prepare tag options for SelectPicker
-  const tagOptions = tags.map(tag => ({
+  const tagOptions = tags.map((tag) => ({
     label: tag.name,
-    value: tag.name
+    value: tag.name,
   }));
 
   if (isLoading) {
-    return <Loader center size="lg" content="Loading..." />;
+    return <Loader center size="lg" content="Cargando..." />;
   }
 
   if (isError) {
@@ -201,20 +212,20 @@ const RecordingsPage = () => {
           marginBottom: "20px",
         }}
       >
-        <h2>Recordings</h2>
+        <h2>Grabaciones</h2>
         <ButtonToolbar>
           <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
-            Create Recording
+            Crear Grabación
           </Button>
         </ButtonToolbar>
       </div>
-      
+
       {/* Search and Filter Controls */}
       <FlexboxGrid justify="space-between" style={{ marginBottom: "20px" }}>
         <FlexboxGrid.Item colspan={12}>
           <InputGroup inside>
             <Input
-              placeholder="Search recordings by title, description, or tags... (Press Enter to search)"
+              placeholder="Buscar grabaciones por título, descripción o etiquetas... (Presione Enter para buscar)"
               value={searchInput}
               onChange={handleSearchChange}
               onKeyPress={handleSearchKeyPress}
@@ -227,7 +238,7 @@ const RecordingsPage = () => {
         <FlexboxGrid.Item colspan={8}>
           <SelectPicker
             data={tagOptions}
-            placeholder="Quick search by tag"
+            placeholder="Búsqueda rápida por etiqueta"
             value={selectedTag}
             onChange={handleTagSelect}
             cleanable
@@ -249,23 +260,29 @@ const RecordingsPage = () => {
         open={isConfirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Delete Recording"
-        body="Are you sure you want to delete this recording? This action cannot be undone."
+        title="Eliminar Grabación"
+        body="¿Estás seguro de que quieres eliminar esta grabación? Esta acción no se puede deshacer."
         isLoading={deleteMutation.isPending}
+      />
+      <MetadataViewerModal
+        open={isMetadataModalOpen}
+        onClose={() => setMetadataModalOpen(false)}
+        metadata={selectedRecording?.metadata || null}
+        recordingTitle={selectedRecording?.title || ""}
       />
       <Table height={400} data={recordings} autoHeight>
         <Column width={200} fixed>
-          <HeaderCell>Title</HeaderCell>
+          <HeaderCell>Título</HeaderCell>
           <Cell dataKey="title" />
         </Column>
 
         <Column width={300}>
-          <HeaderCell>Description</HeaderCell>
+          <HeaderCell>Descripción</HeaderCell>
           <Cell dataKey="description" />
         </Column>
 
         <Column width={400}>
-          <HeaderCell>File URL</HeaderCell>
+          <HeaderCell>URL del Archivo</HeaderCell>
           <Cell>
             {(rowData) => {
               const url = (rowData as Recording).fileUrl;
@@ -277,14 +294,14 @@ const RecordingsPage = () => {
                   () => {
                     toaster.push(
                       <Message type="success" closable>
-                        URL copied to clipboard.
+                        URL copiada al portapapeles.
                       </Message>
                     );
                   },
                   (err) => {
                     toaster.push(
                       <Message type="error" closable>
-                        {`Failed to copy URL: ${err.message}`}
+                        {`Error al copiar la URL: ${err.message}`}
                       </Message>
                     );
                   }
@@ -294,8 +311,10 @@ const RecordingsPage = () => {
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "baseline",
+                    alignItems: "center",
                     justifyContent: "space-between",
+                    height: "100%",
+                    minHeight: "32px",
                   }}
                 >
                   <a
@@ -303,17 +322,20 @@ const RecordingsPage = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
+                      display: "flex",
+                      alignItems: "center",
                       textOverflow: "ellipsis",
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       marginRight: "10px",
+                      flex: 1,
                     }}
                   >
                     {url}
                   </a>
                   <IconButton
                     icon={<CopyIcon />}
-                    size="lg"
+                    size="sm"
                     appearance="subtle"
                     onClick={handleCopy}
                   />
@@ -324,7 +346,7 @@ const RecordingsPage = () => {
         </Column>
 
         <Column width={200}>
-          <HeaderCell>Tags</HeaderCell>
+          <HeaderCell>Etiquetas</HeaderCell>
           <Cell dataKey="tags">
             {(rowData) =>
               (rowData.tags || []).map((tag: Tag) => tag.name).join(", ")
@@ -333,7 +355,7 @@ const RecordingsPage = () => {
         </Column>
 
         <Column width={200}>
-          <HeaderCell>Created At</HeaderCell>
+          <HeaderCell>Fecha de Creación</HeaderCell>
           <Cell dataKey="createdAt">
             {(rowData) =>
               new Date((rowData as Recording).createdAt).toLocaleDateString()
@@ -342,17 +364,25 @@ const RecordingsPage = () => {
         </Column>
 
         <Column width={200}>
-          <HeaderCell>Updated At</HeaderCell>
+          <HeaderCell>Fecha de Actualización</HeaderCell>
           <Cell dataKey="updatedAt">
             {(rowData) => new Date(rowData.updatedAt).toLocaleDateString()}
           </Cell>
         </Column>
 
-        <Column width={120} fixed="right">
-          <HeaderCell>Actions</HeaderCell>
+        <Column width={150} fixed="right">
+          <HeaderCell>Acciones</HeaderCell>
           <Cell style={{ padding: "6px" }}>
             {(rowData) => (
               <ButtonToolbar>
+                <IconButton
+                  icon={<DetailIcon />}
+                  size="sm"
+                  appearance="subtle"
+                  color="blue"
+                  onClick={() => handleMetadataClick(rowData as Recording)}
+                  title="Ver metadata"
+                />
                 <IconButton
                   icon={<EditIcon />}
                   size="sm"
@@ -371,7 +401,7 @@ const RecordingsPage = () => {
           </Cell>
         </Column>
       </Table>
-      
+
       {/* Pagination Controls */}
       {pagination && pagination.totalPages > 1 && (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
@@ -384,7 +414,7 @@ const RecordingsPage = () => {
             boundaryLinks
             maxButtons={5}
             size="md"
-            layout={['total', '-', 'limit', '|', 'pager', 'skip']}
+            layout={["total", "-", "limit", "|", "pager", "skip"]}
             total={pagination.totalCount}
             limitOptions={[10, 20, 50]}
             limit={pageSize}

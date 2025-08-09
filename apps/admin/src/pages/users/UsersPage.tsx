@@ -8,7 +8,7 @@ import {
   InputGroup,
   SelectPicker,
   FlexboxGrid,
-  ButtonToolbar,
+  Stack,
   IconButton,
   toaster,
 } from "rsuite";
@@ -24,11 +24,10 @@ import ConfirmModal from "../../components/shared/ConfirmModal";
 const { Column, HeaderCell, Cell } = Table;
 
 const UsersPage = () => {
-  
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  
+
   // Search and filter state
   const [searchInput, setSearchInput] = useState(""); // Input field value
   const [searchTerm, setSearchTerm] = useState(""); // Actual search term for API
@@ -45,15 +44,15 @@ const UsersPage = () => {
     queryKey: ["users", searchTerm, selectedPlan],
     queryFn: async () => {
       const params: Record<string, string> = {};
-      
+
       if (searchTerm) {
         params.search = searchTerm;
       }
-      
+
       if (selectedPlan) {
         params.plan = selectedPlan;
       }
-      
+
       const response = await api.get("/admin/users", params);
       return response.data;
     },
@@ -64,14 +63,14 @@ const UsersPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toaster.push(
-        <Message type="success">User deleted successfully.</Message>
+        <Message type="success">Usuario eliminado con éxito.</Message>
       );
       setConfirmOpen(false);
     },
     onError: (err) => {
       toaster.push(
         <Message type="error">
-          {err.message || "Failed to delete user."}
+          {err.message || "Error al eliminar el usuario."}
         </Message>
       );
       setConfirmOpen(false);
@@ -101,8 +100,10 @@ const UsersPage = () => {
   };
 
   // Handle search on Enter key press
-  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+  const handleSearchKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter") {
       setSearchTerm(searchInput);
     }
   };
@@ -114,10 +115,8 @@ const UsersPage = () => {
     setSearchTerm(""); // Clear search term when selecting plan
   };
 
-
-
   if (isLoading) {
-    return <Loader center size="lg" content="Loading..." />;
+    return <Loader center size="lg" content="Cargando..." />;
   }
 
   if (isError) {
@@ -134,18 +133,16 @@ const UsersPage = () => {
           marginBottom: "20px",
         }}
       >
-        <h2>Users</h2>
-        <ButtonToolbar>
-
-        </ButtonToolbar>
+        <h2>Usuarios</h2>
+        <Stack direction="row" spacing={6}></Stack>
       </div>
-      
+
       {/* Search and Filter Controls */}
       <FlexboxGrid justify="space-between" style={{ marginBottom: "20px" }}>
         <FlexboxGrid.Item colspan={12}>
           <InputGroup inside>
             <Input
-              placeholder="Search users by email... (Press Enter to search)"
+              placeholder="Buscar"
               value={searchInput}
               onChange={handleSearchChange}
               onKeyPress={handleSearchKeyPress}
@@ -159,9 +156,9 @@ const UsersPage = () => {
           <SelectPicker
             data={[
               { label: "FREE", value: "FREE" },
-              { label: "PREMIUM", value: "PREMIUM" }
+              { label: "PREMIUM", value: "PREMIUM" },
             ]}
-            placeholder="Filter by plan"
+            placeholder="Filtrar por plan"
             value={selectedPlan}
             onChange={handlePlanSelect}
             cleanable
@@ -179,13 +176,13 @@ const UsersPage = () => {
         open={isConfirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Delete User"
-        body="Are you sure you want to delete this user? This action cannot be undone."
+        title="Eliminar Usuario"
+        body="¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer."
         isLoading={deleteMutation.isPending}
       />
       <Table height={400} data={users} autoHeight>
         <Column width={300} sortable>
-          <HeaderCell>Email</HeaderCell>
+          <HeaderCell>Correo Electrónico</HeaderCell>
           <Cell dataKey="email" />
         </Column>
 
@@ -195,41 +192,48 @@ const UsersPage = () => {
         </Column>
 
         <Column width={120} sortable>
-          <HeaderCell>Role</HeaderCell>
+          <HeaderCell>Rol</HeaderCell>
           <Cell dataKey="role" />
         </Column>
 
         <Column width={150} sortable>
-          <HeaderCell>Verified</HeaderCell>
+          <HeaderCell>Verificado</HeaderCell>
           <Cell dataKey="isVerified">
-            {(rowData) => (rowData.isVerified ? "Yes" : "No")}
+            {(rowData) => (rowData.isVerified ? "Sí" : "No")}
           </Cell>
         </Column>
 
         <Column width={200} sortable>
-          <HeaderCell>Created At</HeaderCell>
+          <HeaderCell>Fecha de Creación</HeaderCell>
           <Cell dataKey="createdAt">
             {(rowData) => new Date(rowData.createdAt).toLocaleDateString()}
           </Cell>
         </Column>
 
         <Column width={120} fixed="right">
-          <HeaderCell>Actions</HeaderCell>
+          <HeaderCell>Acciones</HeaderCell>
           <Cell>
             {(rowData) => (
-              <ButtonToolbar>
+              <Stack
+                direction="row"
+                spacing={6}
+                justifyContent="center"
+                alignItems="center"
+              >
                 <IconButton
                   icon={<TrashIcon />}
                   color="red"
+                  size="sm"
                   appearance="subtle"
                   onClick={() => handleDeleteClick(rowData as User)}
                 />
                 <IconButton
                   icon={<EditIcon />}
+                  size="sm"
                   appearance="subtle"
                   onClick={() => handleUpdateClick(rowData as User)}
                 />
-              </ButtonToolbar>
+              </Stack>
             )}
           </Cell>
         </Column>

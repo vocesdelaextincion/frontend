@@ -40,18 +40,18 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object().shape({
-  role: Yup.string().oneOf(Object.values(Role)).required("Role is required"),
-  plan: Yup.string().oneOf(Object.values(Plan)).required("Plan is required"),
+    role: Yup.string().oneOf(Object.values(Role)).required("El rol es requerido"),
+    plan: Yup.string().oneOf(Object.values(Plan)).required("El plan es requerido"),
 });
 
-const roleData = (Object.values(Role) as Role[]).map((role) => ({
-  label: role,
-  value: role,
-}));
-const planData = (Object.values(Plan) as Plan[]).map((plan) => ({
-  label: plan,
-  value: plan,
-}));
+const roleData = [
+  { label: "Usuario", value: "USER" },
+  { label: "Administrador", value: "ADMIN" },
+];
+const planData = [
+  { label: "Gratis", value: "FREE" },
+  { label: "Premium", value: "PREMIUM" },
+];
 
 const UpdateUserModal = ({ open, onClose, user }: UpdateUserModalProps) => {
   const queryClient = useQueryClient();
@@ -65,14 +65,14 @@ const UpdateUserModal = ({ open, onClose, user }: UpdateUserModalProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toaster.push(
-        <Message type="success">User updated successfully.</Message>
+                <Message type="success">Usuario actualizado con éxito.</Message>
       );
       onClose();
     },
     onError: (error) => {
       toaster.push(
         <Message type="error">
-          {error.message || "Failed to update user."}
+          {error.message || "Error al actualizar el usuario."}
         </Message>
       );
     },
@@ -88,7 +88,7 @@ const UpdateUserModal = ({ open, onClose, user }: UpdateUserModalProps) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>
-        <Modal.Title>Update User</Modal.Title>
+                <Modal.Title>Actualizar Usuario</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik<FormValues>
@@ -117,7 +117,7 @@ const UpdateUserModal = ({ open, onClose, user }: UpdateUserModalProps) => {
 
 
               <Form.Group>
-                <Form.ControlLabel>Role</Form.ControlLabel>
+                                <Form.ControlLabel>Rol</Form.ControlLabel>
                 <SelectPicker
                   data={roleData}
                   name="role"
@@ -134,7 +134,7 @@ const UpdateUserModal = ({ open, onClose, user }: UpdateUserModalProps) => {
               </Form.Group>
 
               <Form.Group>
-                <Form.ControlLabel>Plan</Form.ControlLabel>
+                                <Form.ControlLabel>Plan</Form.ControlLabel>
                 <SelectPicker
                   data={planData}
                   name="plan"
@@ -159,10 +159,10 @@ const UpdateUserModal = ({ open, onClose, user }: UpdateUserModalProps) => {
                     type="submit"
                     loading={isSubmitting}
                   >
-                    Update
+                    Actualizar
                   </Button>
                   <Button onClick={onClose} appearance="subtle">
-                    Cancel
+                    Cancelar
                   </Button>
                 </ButtonToolbar>
               </Form.Group>

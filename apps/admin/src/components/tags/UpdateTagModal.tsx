@@ -11,7 +11,7 @@ import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import api from '../../services/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Tag } from '../../types';
+import type { Tag } from '@packages/types/tag';
 
 interface UpdateTagModalProps {
   open: boolean;
@@ -24,7 +24,7 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
+    name: Yup.string().required('El nombre es requerido'),
 });
 
 const UpdateTagModal = ({ open, onClose, tag }: UpdateTagModalProps) => {
@@ -34,11 +34,11 @@ const UpdateTagModal = ({ open, onClose, tag }: UpdateTagModalProps) => {
     mutationFn: (updatedTag) => api.put(`/tags/${tag?.id}`, updatedTag as unknown as Record<string, unknown>),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toaster.push(<Message type="success">Tag updated successfully.</Message>);
+            toaster.push(<Message type="success">Etiqueta actualizada con éxito.</Message>);
       onClose();
     },
     onError: (error) => {
-      toaster.push(<Message type="error">{error.message || 'Failed to update tag.'}</Message>);
+            toaster.push(<Message type="error">{error.message || 'Error al actualizar la etiqueta.'}</Message>);
     },
   });
 
@@ -49,7 +49,7 @@ const UpdateTagModal = ({ open, onClose, tag }: UpdateTagModalProps) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Modal.Header>
-        <Modal.Title>Update Tag</Modal.Title>
+                <Modal.Title>Actualizar Etiqueta</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik
@@ -65,7 +65,7 @@ const UpdateTagModal = ({ open, onClose, tag }: UpdateTagModalProps) => {
           {({ values, errors, touched, handleBlur, handleSubmit, isSubmitting, setFieldValue }) => (
             <Form fluid onSubmit={() => handleSubmit()}>
               <Form.Group>
-                <Form.ControlLabel>Name</Form.ControlLabel>
+                                <Form.ControlLabel>Nombre</Form.ControlLabel>
                 <Form.Control
                   name="name"
                   onChange={(value: string) => setFieldValue('name', value)}
@@ -78,10 +78,10 @@ const UpdateTagModal = ({ open, onClose, tag }: UpdateTagModalProps) => {
               <Form.Group>
                 <ButtonToolbar>
                   <Button appearance="primary" type="submit" loading={isSubmitting}>
-                    Update
+                    Actualizar
                   </Button>
                   <Button onClick={onClose} appearance="subtle">
-                    Cancel
+                    Cancelar
                   </Button>
                 </ButtonToolbar>
               </Form.Group>

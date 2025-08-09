@@ -32,7 +32,7 @@ const getColorForTag = (tagName: string): Color => {
     hash = tagName.charCodeAt(i) + ((hash << 5) - hash);
   }
   const index = Math.abs(hash) % rsuiteColors.length;
-  return rsuiteColors[index];
+  return rsuiteColors[index]!;
 };
 
 const TagsPage = () => {
@@ -46,7 +46,9 @@ const TagsPage = () => {
     queryKey: ["tags"],
     queryFn: async () => {
       const response = await api.get("/tags");
-      return response.data || response;
+      const data = response.data || response;
+      // Ensure we always return an array
+      return Array.isArray(data) ? data : [];
     },
   });
 
@@ -54,12 +56,12 @@ const TagsPage = () => {
     mutationFn: (newTag) => api.post("/tags", newTag),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
-      toaster.push(<Message type="success">Tag created successfully.</Message>);
+            toaster.push(<Message type="success">Etiqueta creada con éxito.</Message>);
       setNewTagName("");
     },
     onError: (err) => {
       toaster.push(
-        <Message type="error">{err.message || "Failed to create tag."}</Message>
+                <Message type="error">{err.message || "Error al crear la etiqueta."}</Message>
       );
     },
   });
@@ -68,11 +70,11 @@ const TagsPage = () => {
     mutationFn: (tagId) => api.delete(`/tags/${tagId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
-      toaster.push(<Message type="success">Tag deleted successfully.</Message>);
+            toaster.push(<Message type="success">Etiqueta eliminada con éxito.</Message>);
     },
     onError: (err) => {
       toaster.push(
-        <Message type="error">{err.message || "Failed to delete tag."}</Message>
+                <Message type="error">{err.message || "Error al eliminar la etiqueta."}</Message>
       );
     },
   });
@@ -88,7 +90,9 @@ const TagsPage = () => {
   };
 
   const displayedTags = useMemo(() => {
-    let filteredTags = tags || [];
+    // Ensure tags is always an array
+    const safeTags = Array.isArray(tags) ? tags : [];
+    let filteredTags = safeTags;
 
     if (searchQuery) {
       filteredTags = filteredTags.filter(tag =>
@@ -109,7 +113,7 @@ const TagsPage = () => {
   }, [tags, searchQuery, sortOrder]);
 
   if (isLoading) {
-    return <Loader center size="lg" content="Loading..." />;
+        return <Loader center size="lg" content="Cargando..." />;
   }
 
   if (isError) {
@@ -118,20 +122,20 @@ const TagsPage = () => {
 
   return (
     <div>
-      <h2>Tags</h2>
+            <h2>Etiquetas</h2>
       <Grid fluid>
         <Row gutter={30}>
           <Col xs={12}>
             <div style={{ marginBottom: 20 }}>
               <ButtonToolbar>
                 <InputGroup inside>
-                  <Input placeholder="Search tags..." value={searchQuery} onChange={setSearchQuery} />
+                                    <Input placeholder="Buscar etiquetas..." value={searchQuery} onChange={setSearchQuery} />
                   <InputGroup.Addon>
                     <SearchIcon />
                   </InputGroup.Addon>
                 </InputGroup>
                 <Button onClick={handleSortClick}>
-                  Sort by Name {sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : ''}
+                                    Ordenar por Nombre {sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : ''}
                 </Button>
               </ButtonToolbar>
             </div>
@@ -151,11 +155,11 @@ const TagsPage = () => {
           <Col xs={12}>
             <Form onSubmit={handleCreateTag} fluid>
               <Form.Group controlId="new-tag-name">
-                <Form.ControlLabel>Create New Tag</Form.ControlLabel>
+                                <Form.ControlLabel>Crear Nueva Etiqueta</Form.ControlLabel>
                 <Input
                   value={newTagName}
                   onChange={setNewTagName}
-                  placeholder="Enter tag name"
+                                    placeholder="Ingrese el nombre de la etiqueta"
                 />
               </Form.Group>
               <Button
@@ -163,7 +167,7 @@ const TagsPage = () => {
                 appearance="primary"
                 loading={createMutation.isPending}
               >
-                Create Tag
+                                Crear Etiqueta
               </Button>
             </Form>
           </Col>

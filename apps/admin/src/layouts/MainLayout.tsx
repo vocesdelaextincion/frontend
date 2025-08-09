@@ -9,20 +9,26 @@ import {
   Navbar,
   Dropdown,
 } from "rsuite";
-import { Outlet, Link } from "@tanstack/react-router";
-import { Icon } from "@rsuite/icons";
+import { Outlet, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { Gear, Dashboard, Peoples, Detail, Tag, Exit } from "@rsuite/icons";
 import { useAuth } from "../hooks/useAuth";
 
 const MainLayout = () => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = () => {
+    logout(() => {
+      navigate({ to: "/login" });
+    });
+  };
 
   return (
     <Container className="main-layout-container">
       <Sidebar className="sidebar" width={260} collapsible>
         <Sidenav.Header>
           <div className="sidenav-header">
-            <Icon as={Peoples} className="sidenav-header-icon" />
             <span className="sidenav-header-text">Voces de la Extinción</span>
           </div>
         </Sidenav.Header>
@@ -33,24 +39,37 @@ const MainLayout = () => {
                 as={Link}
                 to="/"
                 eventKey="1"
-                active
+                active={location.pathname === "/"}
                 icon={<Dashboard />}
               >
-                Dashboard
+                Panel de Control
               </Nav.Item>
-              <Nav.Item as={Link} to="/users" eventKey="2" icon={<Peoples />}>
-                Users
+              <Nav.Item
+                as={Link}
+                to="/users"
+                eventKey="2"
+                active={location.pathname === "/users"}
+                icon={<Peoples />}
+              >
+                Usuarios
               </Nav.Item>
               <Nav.Item
                 as={Link}
                 to="/recordings"
                 eventKey="3"
+                active={location.pathname === "/recordings"}
                 icon={<Detail />}
               >
-                Recordings
+                Grabaciones
               </Nav.Item>
-              <Nav.Item as={Link} to="/tags" eventKey="4" icon={<Tag />}>
-                Tags
+              <Nav.Item
+                as={Link}
+                to="/tags"
+                eventKey="4"
+                active={location.pathname === "/tags"}
+                icon={<Tag />}
+              >
+                Etiquetas
               </Nav.Item>
             </Nav>
           </Sidenav.Body>
@@ -60,9 +79,13 @@ const MainLayout = () => {
         <Header>
           <Navbar appearance="inverse">
             <Nav pullRight>
-              <Dropdown placement="bottomEnd" icon={<Gear />} title="Admin">
-                <Dropdown.Item icon={<Exit />} onClick={logout}>
-                  Logout
+              <Dropdown
+                placement="bottomEnd"
+                icon={<Gear />}
+                title="Administrador"
+              >
+                <Dropdown.Item icon={<Exit />} onClick={handleLogout}>
+                  Cerrar Sesión
                 </Dropdown.Item>
               </Dropdown>
             </Nav>
