@@ -206,7 +206,7 @@ const UpdateRecordingModal = ({
                   <Col xs={extractedMetadata ? 16 : 24}>
                     <Form
                       fluid
-                      onSubmit={(formValue, event) => {
+                      onSubmit={(event) => {
                         event?.preventDefault();
                         handleSubmit();
                       }}
