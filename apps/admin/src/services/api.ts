@@ -1,4 +1,4 @@
-const BASE_URL = process.env.API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export class AuthorizationError extends Error {
   constructor(message: string = "Not authorized") {
