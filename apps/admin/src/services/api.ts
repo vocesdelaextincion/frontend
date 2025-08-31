@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.API_BASE_URL;
 
 export class AuthorizationError extends Error {
   constructor(message: string = "Not authorized") {
@@ -8,7 +8,7 @@ export class AuthorizationError extends Error {
 }
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -21,7 +21,7 @@ const api = {
     if (params) {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
+        if (value !== undefined && value !== null && value !== "") {
           searchParams.append(key, String(value));
         }
       });
