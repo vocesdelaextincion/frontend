@@ -1,0 +1,32 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div class="container">
+  <a href="https://www.facebook.com/VocesDeLaExtincion" class="icon-container">
+    <Icon name="mdi:facebook" class="icon"/>
+  </a>
+  <a href="https://www.instagram.com/vocesdelaextincion/" class="icon-container">
+    <Icon name="mdi:instagram" class="icon"/>
+  </a>
+</div>
+
+<style>
+  .container {
+    display: flex;
+    gap: 3rem;
+  }
+
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+</style>

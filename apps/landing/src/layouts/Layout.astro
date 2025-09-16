@@ -1,0 +1,58 @@
+---
+import { ClientRouter } from "astro:transitions";
+import Navbar from "../components/Interactive/Navbar/Navbar";
+import "@fontsource/montserrat";
+const {background } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Voces de la Extinción</title>
+    <ClientRouter />
+  </head>
+  <body class={`background-${background}`}>
+	<div class="page">
+    <Navbar />
+      <slot />
+	</div>
+  </body>
+</html>
+
+<style>
+  :root {
+    --black: #1f281d;
+    --dark: #2d3f2a;
+    --light: #0e8a41;
+    --white: #ffffff;
+	--font-sans-serif: "Montserrat", sans-serif;
+	--font-serif: serif;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--black);
+    font-family: var(--font-sans-serif);
+    color: var(--white)
+  }
+
+  .page {
+    width: 80vw;
+    height: 100%;
+    margin: 0 auto;
+  }
+
+  .background-light {
+    background-color: var(--white);
+  }
+
+  .background-dark {
+    background-color: var(--black);
+  }
+</style>

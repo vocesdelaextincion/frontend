@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Social from "../components/Social/Social.astro";
+import { Image } from "astro:assets";
+import mainImg from "../assets/images/home_1.svg";
+import icons1 from "../assets/images/home_icons_1.svg";
+import icons2 from "../assets/images/home_icons_2.svg";
+---
+
+<Layout background="dark">
+  <div class="page">
+    <Image src={mainImg} alt="Voces de la Extinción" class="main-img" />
+    <h1>Voces de la Extinción</h1>
+    <div class="content">
+      <span>Voces de la Extinción es un proyecto de la Asociación Civil Los
+        Manantiales y Tica Hen Rio Ceballos - Cordoba - Argentina</span
+      >
+      <Image
+        src={icons1}
+        alt="Íconos de asociaciones colaboradoras"
+        class="icons"
+      />
+      <span>Este proyecto o alguna de sus instancias expositivas son posibles
+        gracias al apoyo de :</span
+      >
+      <Image
+        src={icons2}
+        alt="Íconos de asociaciones colaboradoras"
+        class="icons"
+      />
+      <span>Manuel Camilo Eghía del Laboratorio de Acústica y Percepción Sonora de
+        la Universidad Provincial de Quilmes Ramiro Palacio y Ricardo Ricapito -
+        Artistas</span
+      >
+    </div>
+	<Social />
+  </div>
+</Layout>
+
+<style>
+  span {
+    font-weight: bold;
+  }
+
+  .page {
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    height: 100vh;
+  }
+
+  .main-img {
+    width: 80%;
+    max-width: 1000px;
+    height: auto;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+	text-align: center;
+	padding-bottom: 1rem;
+  }
+
+  .icons{
+	filter:sepia(100);
+  }
+</style>
