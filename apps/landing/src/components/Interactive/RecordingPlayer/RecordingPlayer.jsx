@@ -20,9 +20,9 @@ const RecordingPlayer = () => {
     },
     {
       id: "rec_002",
-      title: "Abejas diente de león",
-      description: "Abejas diente de león.",
-      fileUrl: "/audio/abejasdienteleon.wav",
+      title: "Carpintero Negro",
+      description: "Un carpintero negro en el monte. Grabado en julio. 16hs",
+      fileUrl: "/audio/carpintero-negro-julio-16hs.mp3",
       tags: [
         { id: "tag_001", name: "abejas", color: "#4CAF50" },
         { id: "tag_002", name: "insectos", color: "#1E88E5" },
@@ -41,9 +41,9 @@ const RecordingPlayer = () => {
     },
     {
       id: "rec_004",
-      title: "Carpintero buscando",
-      description: "Un pájaro carpintero buscando en el monte.",
-      fileUrl: "/audio/carpintero-buscando.wav",
+      title: "Chicharras",
+      description: "Chicharras. Grabado en marzo. 17hs.",
+      fileUrl: "/audio/chicharras-marzo-17hs.mp3",
       tags: [
         { id: "tag_001", name: "caballos", color: "#4CAF50" },
         { id: "tag_002", name: "animales", color: "#1E88E5" },
