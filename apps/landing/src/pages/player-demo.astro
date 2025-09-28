@@ -1,0 +1,33 @@
+---
+// Example Astro page demonstrating the RecordingPlayer component
+import RecordingPlayer from '../components/Interactive/RecordingPlayer/RecordingPlayer.jsx';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recording Player Demo</title>
+  </head>
+  <body>
+    <main>
+      <h1>Recording Player Demo</h1>
+      <p>This page demonstrates the RecordingPlayer React component in an Astro environment.</p>
+      
+      <!-- The client:load directive tells Astro to hydrate this component on page load -->
+      <RecordingPlayer client:load />
+      
+      <div style="margin-top: 40px; padding: 20px; background-color: #f5f5f5; border-radius: 8px;">
+        <h2>Instructions:</h2>
+        <ol>
+          <li>Create an <code>/audio</code> folder in your <code>public</code> directory</li>
+          <li>Add your MP3 files (recording1.mp3, recording2.mp3, etc.)</li>
+          <li>Update the recordings array in the component to match your file names</li>
+          <li>Click on any recording button to select it</li>
+          <li>Use the Play button to start/pause playback</li>
+        </ol>
+      </div>
+    </main>
+  </body>
+</html>

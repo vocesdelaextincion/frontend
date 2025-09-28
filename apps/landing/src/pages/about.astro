@@ -1,7 +1,142 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import about1 from "../assets/images/about_1.svg";
+import about2 from "../assets/images/about_2.svg";
+import about3 from "../assets/images/about_3.svg";
+import Social from "../components/Social/Social.astro";
 ---
 
 <Layout background="dark">
-    <h1>About</h1>
+  <div class="page">
+    <div class="content-flex-1">
+      <Image
+        src={about1}
+        alt="Voces de la Extinción"
+        class="content-flex-1-img"
+      />
+      <div class="content-flex-col">
+        <p>
+          «Voces de la Extinción» es un proyecto que propone la grabación del
+          paisaje sonoro del bosque nativo de la Provincia de Córdoba.
+        </p>
+        <p>
+          Busca reconectar, a través de la valoración y recuperación de la trama
+          de prácticas del territorio, un sentido que no necesariamente tiene
+          una utilidad, un resultado material, económico, o científico.
+          Recuperar el abordaje afectivo, la trama cultural propia del
+          territorio, profundamente anclada en lo natural.
+        </p>
+        <p>
+          Apelar a lenguajes diferentes de los científicos y técnicos,
+          especialmente basados en experiencias sensibles, puede llevar a la
+          construcción de una relación más afectiva y, por lo tanto, una
+          reapropiación social de estos espacios y sus procesos de conservación.
+        </p>
+      </div>
+    </div>
+    <div class="content-flex-2">
+      <div class="content-flex-col">
+        <Image src={about3} alt="Voces de la Extinción" />
+        <p>
+          Teniendo en cuenta la realidad de nuestra provincia, a la que solo le
+          queda el 3% de bosque nativo, y el “campo ambiental” creemos que
+          incorporar dispositivos que interpelen lo sensible y lo estético abren
+          este campo, lo transgreden y lo amplían, convocando a más personas y
+          actores sociales, una consecuencia muy necesaria para la defensa y la
+          conservación de estos espacios.
+        </p>
+        <a
+          href="https://drive.google.com/file/d/1AIzMayFzCKtyTYTOKLYf0hvR0aA7bdwN/view?usp=sharing"
+          target="_blank"
+          class="link">VER TEXTO COMPLETO AQUÍ</a
+        >
+      </div>
+      <div class="content-flex-col">
+        <Image src={about2} alt="Voces de la Extinción" />
+        <p>
+          “Voces de la Extinción” plantea la escucha y la grabación del paisaje
+          sonoro del Bosque Chaqueño Serrano como una práctica de intervención
+          social con el fin de poder incidir en la comunidad a través de estos
+          procesos que implican la emergencia de sentidos que, tal vez, se
+          habían perdido o permanecen ocluidos; se presenta como disparador del
+          fortalecimiento de la trama de sentidos y valores, volver a recomponer
+          la trama que se ha fragmentado como resultado de la especialización de
+          cómo abordar el territorio.
+        </p>
+      </div>
+    </div>
+    <img
+      src="https://placehold.co/600x400"
+      alt="Voces de la Extinción"
+      class="main-img"
+    />
+    <span>En el año 2021 Voces de la Extinción fue seleccionado con un
+      video-performance para la Muestra Dislocada/Dislocated para India y México
+      .</span>
+    <img
+      src="https://placehold.co/600x400"
+      alt="Voces de la Extinción"
+      class="main-img"
+    />
+    <Social />
+  </div>
 </Layout>
+
+<style>
+  span {
+    font-weight: bold;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  .page {
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    height: 100vh;
+  }
+
+  .content-flex-1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 1rem;
+
+    .content-flex-1-img {
+      width: 100%;
+      flex: 3;
+    }
+
+    .content-flex-col {
+      flex: 2;
+      text-align: justify;
+    }
+  }
+
+  .content-flex-2 {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem;
+
+    .content-flex-col {
+      flex: 1;
+      text-align: justify;
+    }
+  }
+
+  .link {
+    color: var(--white);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--light);
+    }
+  }
+</style>

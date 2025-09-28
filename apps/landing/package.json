@@ -12,12 +12,14 @@
     "@astrojs/react": "^4.3.1",
     "@fontsource/montserrat": "^5.2.7",
     "@iconify-json/mdi": "^1.2.3",
+    "@iconify/react": "^6.0.2",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "astro": "^5.13.7",
     "astro-icon": "^1.1.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "sharp": "^0.34.3"
+    "sharp": "^0.34.3",
+    "wavesurfer.js": "^7.10.3"
   }
 }
