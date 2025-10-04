@@ -1,9 +1,104 @@
 ---
-import RecordingPlayer from '../components/Interactive/RecordingPlayer/RecordingPlayer';
-import Layout from '../layouts/Layout.astro';
+import RecordingPlayer from "../components/Interactive/RecordingPlayer/RecordingPlayer";
+import Layout from "../layouts/Layout.astro";
+import Social from "../components/Social/Social.astro";
 ---
 
 <Layout background="dark">
-    <h1>Listen</h1>
+  <div class="page">
     <RecordingPlayer client:load />
+
+    <!-- Two-column section -->
+    <section class="two-column-section">
+      <div class="column image-column">
+        <img
+          src="https://placehold.co/400x600"
+          alt="Placeholder image"
+          class="section-image"
+        />
+      </div>
+      <div class="column text-column">
+        <p>
+          Nuestros bosques serranos, tan amenazados por nuestras acciones, van
+          mermando en cantidad y calidad en toda la provincia de Córdoba. Aún
+          quedan algunos espacios de monte puro y bien conservado que tratamos
+          de proteger de diferentes maneras. Voces de la Extinción propone una
+          de ellas: un acercamiento afectivo a nuestro territorio a través de su
+          paisaje sonoro.
+        </p>
+        <p>
+          El monte no son sólo árboles sino, también, todo lo que habita en él.
+          En un mundo donde el progreso está marcado por el cemento, la
+          producción de basura y agentes contaminantes y los ruidos propios de
+          nuestra cotidianeidad, las especies de la naturaleza buscan
+          sobrevivir, siendo desplazadas constantemente por nuestro avance,
+          dejando resquicios de su extinción. Lo que escuchamos hoy no lo
+          escucharemos mañana.Estos sonidos son una huella, una memoria de
+          momentos exactos de la vida que sucedió en lo profundo de porciones de
+          bosque serrano próximo a ciudades del cordón sierras chicas,
+          principalmente Río Ceballos y Unquillo. Son fragmentos de un paisaje
+          frágil y sensible, de los cuales depende la subsistencia de miles de
+          especies
+        </p>
+        <a href="#" class="more-button"> Escuchar más grabaciones.. </a>
+      </div>
+    </section>
+    <Social />
+  </div>
 </Layout>
+
+<style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    height: 100vh;
+  }
+  .two-column-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--white);
+    backdrop-filter: blur(10px);
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .section-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-column p {
+    color: var(--dark);
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+
+  .more-button {
+    padding: 10px 15px;
+    background-color: transparent;
+    border: 1px solid var(--light);
+    color: var(--light);
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    margin-top: 1rem;
+    align-self: flex-start;
+    transition: all 0.2s ease;
+  }
+
+  .more-button:hover {
+    background-color: var(--light);
+    color: var(--white);
+  }
+</style>

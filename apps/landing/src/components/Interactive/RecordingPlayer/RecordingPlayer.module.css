@@ -7,7 +7,9 @@
 }
 
 .recordingList {
-  flex: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .buttons {
@@ -19,27 +21,20 @@
 
 .recordingButton {
   padding: 10px 15px;
-  border: 2px solid #ddd;
-  background-color: #f9f9f9;
+  background-color: var(--light);
+  border: none;
+  color: var(--white);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.recordingButton:hover {
-  background-color: #e9e9e9;
-  border-color: #bbb;
-}
-
 .recordingButton.selected {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: var(--dark);
+  color: var(--white);
 }
 
 .currentSelection {
-  padding: 1rem;
   color: var(--white);
-  background-color: var(--light);
 }
 
 .currentSelectionTitle {
@@ -54,12 +49,17 @@
 }
 
 .playButton {
-  padding: 1rem;
+  width: 4rem;
+  height: 4rem;
+  padding: 0;
   background-color: var(--light);
   color: var(--white);
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   svg {
     width: 2rem;
@@ -68,11 +68,12 @@
 }
 
 .playButton:hover:not(:disabled) {
-  background-color: #218838;
+  background-color: var(--dark);
 }
 
 .playButton:disabled {
-  background-color: #6c757d;
+  background-color: var(--dark);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -93,9 +94,35 @@
   width: 100%;
 }
 
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.tag {
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  color: white;
+  font-weight: 500;
+}
+
+.moreLink {
+  padding: 10px 15px;
+  background-color: transparent;
+  border: 1px solid var(--light);
+  color: var(--light);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 12px;
+}
+
 .playControls .playButton {
-  width: 100%;
-  max-width: 200px;
+  width: 4rem;
+  height: 4rem;
   margin: 0 auto;
-  display: block;
+  display: flex;
 }
