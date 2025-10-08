@@ -17,7 +17,7 @@ const {background } = Astro.props;
   </head>
   <body class={`background-${background}`}>
 	<div class="page">
-    <Navbar />
+    <Navbar client:load />
       <slot />
 	</div>
   </body>
@@ -54,5 +54,30 @@ const {background } = Astro.props;
 
   .background-dark {
     background-color: var(--black);
+  }
+
+  /* Mobile utility classes */
+  :global(.hide-in-mobile) {
+    display: block;
+  }
+
+  :global(.hide-in-desktop) {
+    display: none;
+  }
+
+  /* Mobile breakpoint: 768px and below */
+  @media (max-width: 768px) {
+    .page {
+      width: 95vw;
+      padding: 0 1rem;
+    }
+
+    :global(.hide-in-mobile) {
+      display: none;
+    }
+
+    :global(.hide-in-desktop) {
+      display: block;
+    }
   }
 </style>

@@ -101,4 +101,49 @@ import Social from "../components/Social/Social.astro";
     background-color: var(--light);
     color: var(--white);
   }
+
+  /* Mobile breakpoint: 768px and below */
+  @media (max-width: 768px) {
+    .page {
+      height: auto;
+      min-height: 100vh;
+      padding: 1rem 0;
+    }
+
+    .two-column-section {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 1rem;
+      margin: 0 1rem;
+    }
+
+    .column {
+      order: 0;
+    }
+
+    .image-column {
+      order: 1;
+    }
+
+    .text-column {
+      order: 2;
+    }
+
+    .section-image {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .text-column p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .more-button {
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      align-self: center;
+      text-align: center;
+    }
+  }
 </style>

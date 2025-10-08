@@ -139,4 +139,67 @@ import Social from "../components/Social/Social.astro";
       color: var(--light);
     }
   }
+
+  /* Mobile breakpoint: 768px and below */
+  @media (max-width: 768px) {
+    .page {
+      padding: 1rem 0;
+      height: auto;
+      min-height: 100vh;
+      gap: 1.5rem;
+    }
+
+    .content-flex-1 {
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .content-flex-1-img {
+        flex: none;
+        max-width: 300px;
+        align-self: center;
+      }
+
+      .content-flex-col {
+        flex: none;
+        padding: 0 1rem;
+      }
+    }
+
+    .content-flex-2 {
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 0 1rem 1rem;
+
+      .content-flex-col {
+        flex: none;
+      }
+    }
+
+    .main-img {
+      max-width: 350px;
+      margin: 1rem 0;
+    }
+
+    span {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .link {
+      font-size: 0.9rem;
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      border: 1px solid var(--white);
+      border-radius: 4px;
+    }
+  }
 </style>

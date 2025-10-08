@@ -1,0 +1,37 @@
+---
+import LeafIcon from "./LeafIcon.astro";
+
+interface Props {
+  text: string;
+  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  class?: string;
+}
+
+const { text, as: Tag = "h2", class: className = "" } = Astro.props;
+---
+
+<div class={`heading-with-icons ${className}`}>
+  <LeafIcon />
+  <Tag>{text}</Tag>
+  <LeafIcon class="mirrored" />
+</div>
+
+<style>
+  .heading-with-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  :global(.heading-with-icons .leaf-icon) {
+    width: 2rem;
+    height: 2rem;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  :global(.heading-with-icons .leaf-icon.mirrored) {
+    transform: scaleX(-1);
+  }
+</style>
