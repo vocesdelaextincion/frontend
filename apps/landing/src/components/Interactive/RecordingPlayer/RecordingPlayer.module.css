@@ -126,3 +126,56 @@
   margin: 0 auto;
   display: flex;
 }
+
+/* Mobile breakpoint: 768px and below */
+@media (max-width: 768px) {
+  .player {
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+  }
+
+  .playControls {
+    order: 2;
+    width: 100%;
+  }
+
+  .recordingList {
+    order: 1;
+    width: 100%;
+  }
+
+  .playButton {
+    width: 100% !important;
+    height: 4rem;
+    border-radius: 0.5rem;
+    max-width: 100%;
+  }
+
+  .playControls .playButton {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  .buttons {
+    width: 100%;
+  }
+
+  .recordingButton {
+    flex: 1 1 auto;
+    min-width: 120px;
+  }
+
+  .currentSelection {
+    width: 100%;
+  }
+
+  .currentSelectionTitle {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .timeDisplay {
+    text-align: left;
+  }
+}
