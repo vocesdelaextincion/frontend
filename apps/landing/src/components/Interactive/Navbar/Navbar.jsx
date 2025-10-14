@@ -63,7 +63,7 @@ const Navbar = () => {
         {isMobileMenuOpen && (
           <div className="mobile-menu-panel">
             <ul className="mobile-menu-list">
-              {buttons.map((button) => (
+              {buttons.filter(button => button.key !== 'contact').map((button) => (
                 <NavButton
                   label={button.label}
                   key={button.key}

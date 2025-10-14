@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./TeamSection.css";
 
 // Team data - easily expandable for more team members
-const teamMembers = [
+export const teamMembers = [
   {
     id: 1,
     name: "M. Angélica Goldar Parodi",
@@ -69,7 +69,7 @@ const TeamSection = () => {
         {teamMembers.map((member) => (
           <div key={member.id} className="team-member">
             <button
-              className={`team-circle ${member.id === selectedMember.id ? 'selected' : ''}`}
+              className={`team-circle ${member.id === selectedMember.id ? "selected" : ""}`}
               onClick={() => handleMemberSelect(member)}
               aria-label={`Select ${member.name}`}
             >
