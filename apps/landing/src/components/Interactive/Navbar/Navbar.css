@@ -1,5 +1,5 @@
 .navbar {
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     display: none;
   }
 }
@@ -34,7 +34,7 @@
   z-index: 1000;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .mobile-navbar {
     display: block;
   }
