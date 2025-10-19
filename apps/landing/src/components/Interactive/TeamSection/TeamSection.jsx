@@ -9,7 +9,7 @@ export const teamMembers = [
     subtitle: "Tica Hen",
     description:
       "Socióloga, jubilada docente de escuela primaria y gestora cultural. Lleva adelante tareas de logística y el diseño y realización de dispositivos, instalaciones y presentaciones de Voces. Tiene a su cargo la parte pedagógica del proyecto.",
-    image: "/src/assets/images/us_1.svg",
+    image: "/images/us_1.svg",
   },
   {
     id: 2,
@@ -17,7 +17,7 @@ export const teamMembers = [
     subtitle: "Asociación Civil Los Manantiales",
     description:
       "Analista de sistemas, estudiante de sociología y ambientalista. Creador del proyecto. Graba los fragmentos y ensambla las biofisinfonías. Trabaja en el diseño de instalaciones y presentaciones de Voces.",
-    image: "/src/assets/images/us_2.svg",
+    image: "/images/us_2.svg",
   },
   {
     id: 3,
@@ -25,7 +25,7 @@ export const teamMembers = [
     subtitle: "Realizador Audiovisual",
     description:
       "Licenciado en comunicación audiovisual. Trabaja en la realización de fotografías, videos y registro audiovisual de Voces de la Extinción.",
-    image: "/src/assets/images/us_3.svg",
+    image: "/images/us_3.svg",
   },
   {
     id: 4,
@@ -33,7 +33,7 @@ export const teamMembers = [
     subtitle: "Tica Hen",
     description:
       "Gestora Cultural. Estudiante de Artes. Trabaja en el diseño y realización de dispositivos, instalaciones y presentaciones de Voces. Tiene a su cargo el diseño gráfico y de imagen del proyecto.",
-    image: "/src/assets/images/us_4.svg",
+    image: "/images/us_4.svg",
   },
 ];
 
