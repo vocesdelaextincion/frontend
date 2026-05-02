@@ -8,6 +8,7 @@ import {
   TagPicker,
   Loader,
   Uploader,
+  Toggle,
   Grid,
   Row,
   Col,
@@ -32,6 +33,7 @@ interface FormValues {
   description: string;
   tags: string[];
   recording: FileType | null;
+  isFree: boolean;
   metadata?: AudioMetadata | null;
 }
 
@@ -69,14 +71,36 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
     queryFn: () => api.get("/tags"),
   });
 
-  const createRecordingMutation = useMutation<unknown, Error, FormData>({
-    mutationFn: (newRecording) => api.post("/recordings", newRecording),
+  const createRecordingMutation = useMutation<unknown, Error, FormValues>({
+    mutationFn: async (values) => {
+      const file = values.recording!.blobFile!;
+
+      const { uploadUrl, fileKey } = await api.post("/recordings/upload-url", {
+        fileName: values.recording!.name ?? file.name,
+        contentType: file.type || "application/octet-stream",
+      });
+
+      const s3Response = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+      });
+      if (!s3Response.ok) throw new Error("Error al subir el archivo.");
+
+      return api.post("/recordings", {
+        title: values.title,
+        description: values.description,
+        tags: values.tags,
+        metadata: values.metadata || extractedMetadata || null,
+        isFree: values.isFree,
+        fileKey,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recordings"] });
       toaster.push(
         <Message type="success">Grabación creada con éxito.</Message>
       );
-      // Reset metadata state
       setExtractedMetadata(null);
       setIsExtractingMetadata(false);
       onClose();
@@ -131,6 +155,7 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
     description: "",
     tags: [],
     recording: null,
+    isFree: false,
     metadata: null,
   };
 
@@ -161,22 +186,7 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
                 setSubmitting(false);
                 return;
               }
-
-              const formData = new FormData();
-              formData.append("title", values.title);
-              formData.append("description", values.description);
-              formData.append("tags", JSON.stringify(values.tags));
-              formData.append(
-                "metadata",
-                JSON.stringify(values.metadata || extractedMetadata)
-              );
-              formData.append(
-                "recording",
-                values.recording.blobFile,
-                values.recording.name
-              );
-
-              createRecordingMutation.mutate(formData, {
+              createRecordingMutation.mutate(values, {
                 onSettled: () => setSubmitting(false),
               });
             }}
@@ -294,6 +304,21 @@ const CreateRecordingModal = ({ open, onClose }: CreateRecordingModalProps) => {
                             {errors.tags}
                           </Form.HelpText>
                         )}
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.ControlLabel>Acceso Gratuito</Form.ControlLabel>
+                        <Toggle
+                          checked={values.isFree}
+                          onChange={(checked) =>
+                            setFieldValue("isFree", checked)
+                          }
+                          checkedChildren="Sí"
+                          unCheckedChildren="No"
+                        />
+                        <Form.HelpText>
+                          Activar para que los usuarios FREE puedan acceder a esta grabación.
+                        </Form.HelpText>
                       </Form.Group>
 
                       <Form.Group>

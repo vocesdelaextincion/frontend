@@ -345,6 +345,13 @@ const RecordingsPage = () => {
           </Cell>
         </Column>
 
+        <Column width={100}>
+          <HeaderCell>Gratuita</HeaderCell>
+          <Cell dataKey="isFree">
+            {(rowData) => ((rowData as Recording).isFree ? "Sí" : "No")}
+          </Cell>
+        </Column>
+
         <Column width={200}>
           <HeaderCell>Etiquetas</HeaderCell>
           <Cell dataKey="tags">

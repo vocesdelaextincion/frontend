@@ -11,6 +11,7 @@ import {
   Message,
   toaster,
   TagPicker,
+  Toggle,
   Loader,
   Uploader,
   Grid,
@@ -33,6 +34,7 @@ interface FormValues {
   description: string;
   tags: string[];
   recording?: FileType | null;
+  isFree: boolean;
   metadata?: AudioMetadata | null;
 }
 
@@ -107,15 +109,44 @@ const UpdateRecordingModal = ({
     }
   };
 
-  const mutation = useMutation<Recording, Error, FormData>({
-    mutationFn: (updatedRecording) =>
-      api.put(`/recordings/${recording?.id}`, updatedRecording),
+  const mutation = useMutation<Recording, Error, FormValues>({
+    mutationFn: async (values) => {
+      const body: Record<string, unknown> = {
+        title: values.title,
+        description: values.description,
+        tags: values.tags,
+        isFree: values.isFree,
+      };
+
+      if (values.metadata || extractedMetadata) {
+        body.metadata = values.metadata || extractedMetadata;
+      }
+
+      if (values.recording?.blobFile) {
+        const file = values.recording.blobFile;
+
+        const { uploadUrl, fileKey } = await api.post("/recordings/upload-url", {
+          fileName: values.recording.name ?? file.name,
+          contentType: file.type || "application/octet-stream",
+        });
+
+        const s3Response = await fetch(uploadUrl, {
+          method: "PUT",
+          body: file,
+          headers: { "Content-Type": file.type || "application/octet-stream" },
+        });
+        if (!s3Response.ok) throw new Error("Error al subir el archivo.");
+
+        body.fileKey = fileKey;
+      }
+
+      return api.put(`/recordings/${recording?.id}`, body);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["recordings"] });
       toaster.push(
         <Message type="success">Grabación actualizada con éxito.</Message>
       );
-      // Reset metadata state
       setExtractedMetadata(null);
       setIsExtractingMetadata(false);
       onClose();
@@ -138,6 +169,7 @@ const UpdateRecordingModal = ({
     description: recording.description || "",
     tags: recording.tags?.map((tag: Tag) => tag.id) ?? [],
     recording: null,
+    isFree: recording.isFree ?? false,
     metadata: null,
   };
 
@@ -165,29 +197,7 @@ const UpdateRecordingModal = ({
               values: FormValues,
               { setSubmitting }: FormikHelpers<FormValues>
             ) => {
-              const formData = new FormData();
-              formData.append("title", values.title);
-              formData.append("description", values.description);
-              formData.append("tags", JSON.stringify(values.tags));
-
-              // Only append metadata if we have extracted metadata from a new file
-              if (values.metadata || extractedMetadata) {
-                formData.append(
-                  "metadata",
-                  JSON.stringify(values.metadata || extractedMetadata)
-                );
-              }
-
-              // Only append recording file if a new file was uploaded
-              if (values.recording?.blobFile) {
-                formData.append(
-                  "recording",
-                  values.recording.blobFile,
-                  values.recording.name
-                );
-              }
-
-              mutation.mutate(formData, {
+              mutation.mutate(values, {
                 onSettled: () => setSubmitting(false),
               });
             }}
@@ -315,6 +325,21 @@ const UpdateRecordingModal = ({
                             {errors.recording}
                           </Form.HelpText>
                         )}
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.ControlLabel>Acceso Gratuito</Form.ControlLabel>
+                        <Toggle
+                          checked={values.isFree}
+                          onChange={(checked) =>
+                            setFieldValue("isFree", checked)
+                          }
+                          checkedChildren="Sí"
+                          unCheckedChildren="No"
+                        />
+                        <Form.HelpText>
+                          Activar para que los usuarios FREE puedan acceder a esta grabación.
+                        </Form.HelpText>
                       </Form.Group>
 
                       <Form.Group>

@@ -7,6 +7,7 @@ export interface Recording {
   fileUrl: string;
   fileKey: string;
   metadata: any;
+  isFree: boolean;
   tags: Tag[];
   createdAt: Date;
   updatedAt: Date;
